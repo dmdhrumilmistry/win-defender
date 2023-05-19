@@ -33,6 +33,14 @@ def run_cmd(cmd:str, succ_msg:str, err_msg:str, succ_rcode:int=0) -> tuple:
 
 
 def block_root_hubs():
+    '''Blocks USB root hubs on windows machine
+    
+    Args:
+        None
+    
+    Returns:
+        None
+    '''
     res, rcode = run_cmd(
         cmd='pnputil /enum-devices /class "USB"',
         succ_msg='Fetched USB devices ids list',
