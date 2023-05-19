@@ -8,32 +8,46 @@ logging.basicConfig(level=logging.INFO,
                     format='[%(asctime)s] [%(levelname)s] - %(message)s')
 
 
-def run_cmd(cmd:str) -> tuple:
+def run_cmd(cmd:str, succ_msg:str, err_msg:str, succ_rcode:int=0) -> tuple:
     '''Run shell commands
     
-    Arguments:
-        cmd (string): command to be executed
+    Args:
+        cmd (str): command to be executed
+        succ_msg (str): message to be logged if cmd is executed successfully
+        err_msg (str): message to be logged if cmd is interrupted
+        succ_rcode (int): return status code after successfully executing code
 
     Returns:
         tuple: returns executed command output/error along with status code
     '''
     result = run(split(cmd), stderr=PIPE, stdout=PIPE)
-    return (result.stdout.decode('utf-8') or result.stderr.decode('utf-8'), result.returncode)
+    res = result.stdout.decode('utf-8') or result.stderr.decode('utf-8')
+    rcode = result.returncode
+
+    if rcode == succ_rcode:
+        logger.info(succ_msg)
+    else:
+        logger.error(err_msg)
+
+    return (res, rcode)
 
 
 def block_root_hubs():
-    rcode, res = run_cmd('pnputil /enum-devices /class "USB" | findstr "USB\ROOT_HUB"')
+    res, rcode = run_cmd(
+        cmd='pnputil /enum-devices /class "USB"',
+        succ_msg='Fetched USB devices ids list',
+        err_msg='Error occurred while device ids list',
+    )
 
     if rcode == 0:
         for line in res.splitlines():
-            device_id = line.split(':')[-1].strip()
-            rcode, res = run_cmd(f'pnputil /disable-device "{device_id}"')
-            if rcode == 0:
-                logger.info(f'USB {device_id} blocked')
-            else:
-                logger.error(f'Cannot disable USB {device_id}')
-    else:
-        logger.error('Error occurred while gettings device ids')
+            if "USB\ROOT_HUB" in line:
+                device_id = line.split(':')[-1].strip()
+                res, rcode = run_cmd(
+                    cmd=f'pnputil /disable-device "{device_id}"',
+                    succ_msg=f'USB {device_id} blocked',
+                    err_msg=f'Cannot disable USB {device_id}'
+                )
 
 if __name__ == '__main__':
     block_root_hubs()
