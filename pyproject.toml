@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "win-defender"
+version = "0.1.0"
+description = "Tools to defend windows and get compliant with common regulations"
+authors = ["Dhrumil Mistry <56185972+dmdhrumilmistry@users.noreply.github.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "win_defender"}]
+
+[tool.poetry.dependencies]
+python = ">=3.7"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
