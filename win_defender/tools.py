@@ -33,9 +33,16 @@ def sync_time(hostname:str='samay1.nic.in'):
 
     run_cmd(
         cmd=f'w32tm /config /update /manualpeerlist:{hostname}',
-        succ_msg=f'Time Synced with {hostname} successfully',
-        err_msg=f'Failed to sync time with {hostname}',
+        succ_msg=f'Config updated with {hostname} as NTP server successfully',
+        err_msg=f'Failed to update config with {hostname} as NTP server',
         succ_rcode=0,
+    )
+
+    run_cmd(
+        cmd='w32tm /resync',
+        succ_msg='w32time  started',
+        err_msg='Failed to start w32time service',
+        succ_rcode=2,
     )
        
 
