@@ -16,20 +16,27 @@ def sync_time(hostname:str='samay1.nic.in'):
     Returns:
         None
     '''
-    _, rcode = run_cmd(
+
+    run_cmd(
+        cmd='net stop w32time',
+        succ_msg='w32time service stopped',
+        err_msg='Failed to stop w32time service',
+        succ_rcode=2,
+    )
+
+    run_cmd(
         cmd='net start w32time',
         succ_msg='w32time service started',
         err_msg='Failed to start w32time service',
-        succ_rcode=0,
+        succ_rcode=2,
     )
 
-    if rcode == 0:
-         run_cmd(
-            cmd=f'w32tm /config /update /manualpeerlist:{hostname}',
-            succ_msg=f'Time Synced with {hostname} successfully',
-            err_msg=f'Failed to sync time with {hostname}',
-            succ_rcode=0,
-        )
+    run_cmd(
+        cmd=f'w32tm /config /update /manualpeerlist:{hostname}',
+        succ_msg=f'Time Synced with {hostname} successfully',
+        err_msg=f'Failed to sync time with {hostname}',
+        succ_rcode=0,
+    )
        
 
 def block_root_hubs():
