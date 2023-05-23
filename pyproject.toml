@@ -9,6 +9,7 @@ packages = [{include = "win_defender"}]
 
 [tool.poetry.dependencies]
 python = ">=3.7"
+nuitka = "^1.5.8"
 
 
 [build-system]
