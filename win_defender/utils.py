@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO,
                     format='[%(asctime)s] [%(levelname)s] - %(message)s')
 
-def run_cmd(cmd:str, succ_msg:str, err_msg:str, succ_rcode:int=0) -> tuple:
+def run_cmd(cmd:str, succ_msg:str='', err_msg:str='', succ_rcode:int=None) -> tuple:
     '''Run shell commands
     
     Args:
@@ -25,7 +25,7 @@ def run_cmd(cmd:str, succ_msg:str, err_msg:str, succ_rcode:int=0) -> tuple:
 
     if rcode == succ_rcode:
         logger.info(succ_msg)
-    else:
+    elif rcode and succ_rcode:
         logger.error(err_msg)
 
     return (res, rcode)
