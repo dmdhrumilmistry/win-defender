@@ -102,19 +102,12 @@ def remove_admin_perms(username:str=None, admin_username:str=None, admin_passwor
     '''
     # remove admin privileges from current user
     username = username if username else getuser()
-    cmd = f'powershell -Command $CurrentUser = {username};'
-    cmd += 'Add-LocalGroupMember -Group "Users" -Member $CurrentUser;'
-    cmd += 'Remove-LocalGroupMember -Group "Administrators" -Member $CurrentUser;'
-    run_cmd(cmd)
+    run_cmd(f'net user {username} "Administrators" /delete')
+    run_cmd(f'net user {username} "Users" /add')
 
     logger.info('Admin Privileges Removed.')
 
     # create admin user
     if admin_username and admin_password:
-        admin_cmd = f'powershell -Command $UserName = "{admin_username}";'
-        admin_cmd += f'$Password = ConvertTo-SecureString "{admin_password}" -AsPlainText -Force'
-        admin_cmd += f'New-LocalUser -Name $Username -Password $Password -FullName "{admin_full_name}" -Description "Win-Defender User with admin privileges"'
-        admin_cmd += 'Add-LocalGroupMember -Group "Administrators" -Member $UserName'
-        
-        run_cmd(admin_cmd)
+        run_cmd(f'net user {admin_username} {admin_password} /add')
         logger.info(f'Created new Admin user: {admin_username}')
