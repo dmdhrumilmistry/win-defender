@@ -77,3 +77,39 @@ def block_root_hubs():
                     succ_msg=f'USB {device_id} blocked',
                     err_msg=f'Cannot disable USB {device_id}'
                 )
+
+
+def remove_admin_perms(username:str=None, admin_username:str=None, admin_password:str=None, admin_full_name:str='Win Defender Admin'):
+    '''Removes admin permissions from current account and adds it to users group
+    which has minimum permissions. If `admin_username` and `admin_password` param 
+    is passed then it'll create new admin account on the machine.
+
+    Args:
+        username (str): username of user whose admin permissions are need to be removed. default
+        is None, which will remove permissions of current users.
+        admin_username (str): username of admin which will be created. Default is None, hence new
+        admin user won't be created. 
+        admin_password (str): password of admin which will be created. Default is None, hence new
+        admin user won't be created. 
+        admin_full_name (str): full name of admin which will be created. Default is Win Defender Admin.
+         
+
+    Returns:
+        None
+    '''
+    # remove admin privileges from current user
+    if username:
+        run_cmd(f'powershell $CurrentUser = "{username}"')
+    else:
+        run_cmd('powershell $CurrentUser = [Security.Principal.WindowsIdentity]::GetCurrent().Name')
+    run_cmd('Add-LocalGroupMember -Group "Users" -Member $CurrentUser')
+    run_cmd('Remove-LocalGroupMember -Group "Administrators" -Member $CurrentUser')
+    logger.info('Admin Privileges Removed.')
+
+    # create admin user
+    if admin_username and admin_password:
+        run_cmd(f'$UserName = "{admin_username}"')
+        run_cmd(f'$Password = ConvertTo-SecureString "{admin_password}" -AsPlainText -Force')
+        run_cmd(f'New-LocalUser -Name $Username -Password $Password -FullName "{admin_full_name}" -Description "Win-Defender User with admin privileges"')
+        run_cmd('Add-LocalGroupMember -Group "Administrators" -Member $UserName')
+        logger.info(f'Created new Admin user: {admin_username}')
