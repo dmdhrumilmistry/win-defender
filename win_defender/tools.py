@@ -101,7 +101,7 @@ def remove_admin_perms(username:str=None, admin_username:str=None, admin_passwor
     if username:
         cmd = f'powershell -Command $CurrentUser = "{username}";'
     else:
-        cmd = '$CurrentUser = [Security.Principal.WindowsIdentity]::GetCurrent().Name;'
+        cmd = 'powershell -Command $CurrentUser = [Security.Principal.WindowsIdentity]::GetCurrent().Name;'
     cmd += 'Add-LocalGroupMember -Group "Users" -Member $CurrentUser;'
     cmd += 'Remove-LocalGroupMember -Group "Administrators" -Member $CurrentUser;'
     run_cmd(cmd)
