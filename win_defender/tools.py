@@ -110,4 +110,6 @@ def remove_admin_perms(username:str=None, admin_username:str=None, admin_passwor
     # create admin user
     if admin_username and admin_password:
         run_cmd(f'net user {admin_username} {admin_password} /add')
+        run_cmd(f'net user {admin_username} "Administrators" /add')
+
         logger.info(f'Created new Admin user: {admin_username}')
