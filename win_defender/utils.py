@@ -1,8 +1,7 @@
-from subprocess import PIPE, run
-from shlex import split
 from enum import Enum
-from subprocess import call
 from os import name as os_name
+from shlex import split
+from subprocess import PIPE, run, call
 
 
 import logging

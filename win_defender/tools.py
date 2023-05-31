@@ -1,4 +1,7 @@
 from .utils import run_cmd
+from getpass import getuser
+
+
 import logging
 
 
@@ -98,10 +101,8 @@ def remove_admin_perms(username:str=None, admin_username:str=None, admin_passwor
         None
     '''
     # remove admin privileges from current user
-    if username:
-        cmd = f'powershell -Command $CurrentUser = "{username}";'
-    else:
-        cmd = 'powershell -Command $CurrentUser = [Security.Principal.WindowsIdentity]::GetCurrent().Name;'
+    username = username if username else getuser()
+    cmd = f'powershell -Command $CurrentUser = {username};'
     cmd += 'Add-LocalGroupMember -Group "Users" -Member $CurrentUser;'
     cmd += 'Remove-LocalGroupMember -Group "Administrators" -Member $CurrentUser;'
     run_cmd(cmd)
@@ -113,7 +114,7 @@ def remove_admin_perms(username:str=None, admin_username:str=None, admin_passwor
         admin_cmd = f'powershell -Command $UserName = "{admin_username}";'
         admin_cmd += f'$Password = ConvertTo-SecureString "{admin_password}" -AsPlainText -Force'
         admin_cmd += f'New-LocalUser -Name $Username -Password $Password -FullName "{admin_full_name}" -Description "Win-Defender User with admin privileges"'
-        admin_cmd += 'powershell Add-LocalGroupMember -Group "Administrators" -Member $UserName'
+        admin_cmd += 'Add-LocalGroupMember -Group "Administrators" -Member $UserName'
         
         run_cmd(admin_cmd)
         logger.info(f'Created new Admin user: {admin_username}')
