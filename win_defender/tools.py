@@ -102,8 +102,8 @@ def remove_admin_perms(username:str=None, admin_username:str=None, admin_passwor
     '''
     # remove admin privileges from current user
     username = username if username else getuser()
-    run_cmd(f'net localgroup {username} "Administrators" /delete')
     run_cmd(f'net localgroup {username} "Users" /add')
+    run_cmd(f'net localgroup {username} "Administrators" /delete')
 
     logger.info('Admin Privileges Removed.')
 
