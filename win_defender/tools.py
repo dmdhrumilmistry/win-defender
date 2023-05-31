@@ -111,7 +111,7 @@ def remove_admin_perms(username:str=None, admin_username:str=None, admin_passwor
     # create admin user
     if admin_username and admin_password:
         admin_cmd = f'powershell -Command $UserName = "{admin_username}";'
-        admin_cmd += f'$Password = ConvertTo-SecureString "{admin_password}" -AsPlainText -Force')
+        admin_cmd += f'$Password = ConvertTo-SecureString "{admin_password}" -AsPlainText -Force'
         admin_cmd += f'New-LocalUser -Name $Username -Password $Password -FullName "{admin_full_name}" -Description "Win-Defender User with admin privileges"'
         admin_cmd += 'powershell Add-LocalGroupMember -Group "Administrators" -Member $UserName'
         
