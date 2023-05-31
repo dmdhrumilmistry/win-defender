@@ -99,17 +99,21 @@ def remove_admin_perms(username:str=None, admin_username:str=None, admin_passwor
     '''
     # remove admin privileges from current user
     if username:
-        run_cmd(f'powershell $CurrentUser = "{username}"')
+        cmd = f'powershell -Command $CurrentUser = "{username}";'
     else:
-        run_cmd('powershell $CurrentUser = [Security.Principal.WindowsIdentity]::GetCurrent().Name')
-    run_cmd('powershell Add-LocalGroupMember -Group "Users" -Member $CurrentUser')
-    run_cmd('powershell Remove-LocalGroupMember -Group "Administrators" -Member $CurrentUser')
+        cmd = '$CurrentUser = [Security.Principal.WindowsIdentity]::GetCurrent().Name;'
+    cmd += 'Add-LocalGroupMember -Group "Users" -Member $CurrentUser;'
+    cmd += 'Remove-LocalGroupMember -Group "Administrators" -Member $CurrentUser;'
+    run_cmd(cmd)
+
     logger.info('Admin Privileges Removed.')
 
     # create admin user
     if admin_username and admin_password:
-        run_cmd(f'powershell $UserName = "{admin_username}"')
-        run_cmd(f'powershell $Password = ConvertTo-SecureString "{admin_password}" -AsPlainText -Force')
-        run_cmd(f'powershell New-LocalUser -Name $Username -Password $Password -FullName "{admin_full_name}" -Description "Win-Defender User with admin privileges"')
-        run_cmd('powershell Add-LocalGroupMember -Group "Administrators" -Member $UserName')
+        admin_cmd = f'powershell -Command $UserName = "{admin_username}";'
+        admin_cmd += f'$Password = ConvertTo-SecureString "{admin_password}" -AsPlainText -Force')
+        admin_cmd += f'New-LocalUser -Name $Username -Password $Password -FullName "{admin_full_name}" -Description "Win-Defender User with admin privileges"'
+        admin_cmd += 'powershell Add-LocalGroupMember -Group "Administrators" -Member $UserName'
+        
+        run_cmd(admin_cmd)
         logger.info(f'Created new Admin user: {admin_username}')
